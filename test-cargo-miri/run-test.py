@@ -15,8 +15,10 @@ def fail(msg):
     print("\nTEST FAIL: {}".format(msg))
     sys.exit(1)
 
-def cargo_miri(cmd):
-    args = ["cargo", "miri", cmd, "-q"]
+def cargo_miri(cmd, quiet=True):
+    args = ["cargo", "miri", cmd]
+    if quiet:
+        args += ["-q"]
     if 'MIRI_TEST_TARGET' in os.environ:
         args += ["--target", os.environ['MIRI_TEST_TARGET']]
     return args
@@ -77,7 +79,7 @@ print(CGREEN + CBOLD + "## Running `cargo miri` tests{}".format(target_str) + CE
 if not 'MIRI_SYSROOT' in os.environ:
     # Make sure we got a working sysroot.
     # (If the sysroot gets built later when output is compared, that leads to test failures.)
-    subprocess.run(cargo_miri("setup"), check=True)
+    subprocess.run(cargo_miri("setup", quiet=False), check=True)
 test_cargo_miri_run()
 test_cargo_miri_test()
 
